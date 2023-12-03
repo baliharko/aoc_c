@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define BUFFER_SIZE 10000
+#define BUFFER_SIZE 8
 
 int main() {
     FILE* file = fopen("2022/d1/input.txt", "r");

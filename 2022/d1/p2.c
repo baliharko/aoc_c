@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define BUFFER_SIZE 65535
+#define BUFFER_SIZE 8
 
 int count_elves(FILE* file); 
 
@@ -16,7 +16,7 @@ int main() {
     int elves_count = count_elves(file);
     rewind(file);
 
-    char line[8];
+    char line[BUFFER_SIZE];
     int elf_cals[elves_count];
     int elf_cals_idx = 0;
     int sum_cals = 0;
