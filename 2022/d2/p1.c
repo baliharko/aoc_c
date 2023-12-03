@@ -12,6 +12,7 @@
 #define LINE_BUFFER 8
 
 int get_score(char player, char opponent);
+int mod(int a, int b);
 
 int main(void) {
     FILE* file = fopen("2022/d2/input.txt", "r");
@@ -25,7 +26,7 @@ int main(void) {
     while(fgets(res, sizeof(res), file)) {
         char opponent = strtok(res, " ")[0];
         char player = strtok(NULL, " ")[0];
-        ans += get_score(opponent, player); 
+        ans += get_score(player, opponent); 
     }
 
     fclose(file);
@@ -33,27 +34,20 @@ int main(void) {
     return 0;
 }
 
-int get_score(char opponent, char player) {
-    typedef struct {
-        int shape;
-        int beats;
-    } Shape;
+int mod(int a, int b) {
+    return ((a % b) + b) % b;
+}
 
-    Shape shapes[3] = {
-        { ROCK, SZISSORS },
-        { PAPER, ROCK },
-        { SZISSORS, PAPER },
-    };
+int get_score(char player, char opponent) {
+    int p = player - 'X';
+    int o = opponent - 'A';
 
-    int player_translated = player - OFFSET;
-    if (player_translated == opponent) {
-        printf("DRAW\n");
-        return DRAW + player_translated - 'A' + 1;
-    } else if (shapes[player_translated - 'A'].beats == opponent) {
-        printf("WIN\n");
-        return WIN + player_translated - 'A' + 1 ;
+    if (o == p) {
+        return DRAW + (p + 1);
+    } else if (o == mod(p + 1, 3)) {
+        return LOSS + (p + 1);
     } else {
-        printf("LOSS\n");
-        return LOSS + player_translated - 'A' + 1;
-    }}
+        return WIN + (p + 1);
+    }
+}
 
