@@ -1,13 +1,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#define ROCK 'A'
-#define PAPER 'B'
-#define SZISSORS 'C'
 #define WIN 6
 #define DRAW 3
 #define LOSS 0
-#define OFFSET 23
 
 #define LINE_BUFFER 8
 
