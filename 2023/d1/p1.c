@@ -14,7 +14,6 @@ int main() {
     }
 
     int line_count = count_lines(file);
-
     char nums[line_count][3];
     int nums_idx = 0;
     char line[LINE_BUFFER];
@@ -24,12 +23,11 @@ int main() {
         char last_char;
         for(int i = 0; i < len; i++) {
             if (line[i] >= '0' && line[i] <= '9') {
-                char num = line[i];
                 if (is_first_num_set == 0) {
-                    nums[nums_idx][0] = num;
+                    nums[nums_idx][0] = line[i];
                     is_first_num_set = 1;
                 }
-                last_char = num;
+                last_char = line[i];
             }
         }
         nums[nums_idx][1] = last_char;
