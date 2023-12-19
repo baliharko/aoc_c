@@ -64,13 +64,11 @@ int main() {
         nums[nums_idx][1] = last_char;
         nums[nums_idx++][2] = '\0';
 
-        printf("\n");
     }
 
 
     int ans = 0;
     for(int i = 0; i < line_count; i++) {
-        printf("%s\n", nums[i]);
         ans += atoi(nums[i]);
     }
 
