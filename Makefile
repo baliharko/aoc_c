@@ -5,19 +5,26 @@ CFLAGS := -Wall -Wextra -std=c99
 
 DAY :=
 DIR := $(shell dirname "$(DAY)" | sed 's/\/p.*//')
-PART:=$(shell echo $(DAY) | sed 's $(DIR)/  ')
+PART := $(shell echo $(DAY) | sed 's $(DIR)/  ')
 
-all : compile link run clean
+SRCS := $(wildcard $(DAY).c) $(wildcard $(DIR)/common.c)
+OBJS := $(patsubst %.c,%.o,$(SRCS))
 
-compile:
-	@$(CC) $(CFLAGS) -c $(DAY).c $(wildcard $(DIR)/common.c)
+all: compile link run clean
 
-link:
-	@$(CC) $(CFLAGS) $(PART).o $(wildcard common.o) -o $(PART)
+compile: $(OBJS)
 
-run:
+$(OBJS): %.o: %.c
+	@$(CC) $(CFLAGS) -c $< -o $@
+
+link: $(PART)
+
+$(PART): $(OBJS)
+	@$(CC) $(CFLAGS) $^ -o $@
+
+run: $(PART)
 	@./$(PART)
-	
+
 clean:
-	@rm $(PART) $(PART).o $(wildcard $(shell fd 'common.o' .))
+	@rm -f $(PART) $(OBJS) $(wildcard $(DIR)/common.o)
 
