@@ -7,7 +7,7 @@ DAY :=
 DIR := $(shell dirname "$(DAY)" | sed 's/\/p.*//')
 PART := $(shell echo $(DAY) | sed 's $(DIR)/  ')
 
-SRCS := $(wildcard $(DAY).c) $(wildcard $(DIR)/common.c)
+SRCS := $(wildcard $(DAY).c) $(wildcard $(DIR)/common.c) $(filter-out %.h, $(wildcard util/*.c))
 OBJS := $(patsubst %.c,%.o,$(SRCS))
 
 all: compile link run clean
