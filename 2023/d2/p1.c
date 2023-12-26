@@ -3,25 +3,11 @@
 #include <string.h>
 #include <stdbool.h>
 
+#include "common.h"
+
 #define LINE_BUFFER 4096
 
-static int CUBES[26] = { [0 ... 25] = 0 };
 FILE *input;
-
-void set_cubes(char color, int amount) {
-    int idx = color - 'a';
-    CUBES[idx] = amount;
-}
-
-int get_cube_current_amt(char color) {
-    return CUBES[color - 'a'];
-}
-
-void init_cubes() {
-    set_cubes('r', 12);
-    set_cubes('g', 13);
-    set_cubes('b', 14);
-}
 
 int is_game_possible() {
     return get_cube_current_amt('r') >= 0 && get_cube_current_amt('g') >= 0 && get_cube_current_amt('b') >= 0;
@@ -40,13 +26,13 @@ void sum_possible_games(char* line, int* accumulator) {
             char* amt = strtok_r(color + 1, " ", &save_cube_ptr);
             char cube_color = strtok_r(save_cube_ptr, " ", &save_cube_ptr)[0];
 
-            set_cubes(cube_color, get_cube_current_amt(cube_color) - atoi(amt));
+            set_cube(cube_color, get_cube_current_amt(cube_color) - atoi(amt));
         }
 
         if (is_game_possible() != true) 
             is_current_game_possible = false;
         
-        init_cubes();
+        init_cubes(12, 13, 14);
     }
 
     if (is_current_game_possible == true) 
@@ -54,7 +40,7 @@ void sum_possible_games(char* line, int* accumulator) {
 }
 
 int main(void) {
-    init_cubes();
+    init_cubes(12, 13, 14);
 
     input = fopen("2023/d2/input.txt", "r");
     if (input == NULL) {
