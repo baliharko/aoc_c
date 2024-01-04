@@ -6,8 +6,8 @@
 
 #define LINE_BUFFER 1024
 
-void lines_to_dynarray(const char* filepath, DynArray* vector) {
-    init_dynarray(vector);
+void lines_to_dynarray(const char* filepath, DynArray* dyn_array) {
+    init_dynarray(dyn_array);
     FILE* file = fopen(filepath, "r");
     if(file == NULL) {
         printf("Error opening file.");
@@ -21,7 +21,7 @@ void lines_to_dynarray(const char* filepath, DynArray* vector) {
             line[last_idx] = '\0';
         }
 
-        push_back(vector, line, sizeof(line));
+        push_back(dyn_array, line, sizeof(line));
     }
 
     fclose(file);
