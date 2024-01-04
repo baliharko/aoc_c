@@ -2,4 +2,4 @@
 
 #include "dynarray.h"
 
-void lines_to_dynarray(const char* filepath, DynArray* vector);
+void lines_to_dynarray(const char* filepath, DynArray* dyn_array);

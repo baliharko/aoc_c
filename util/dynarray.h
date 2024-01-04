@@ -10,10 +10,10 @@ typedef struct {
     void** data;
 } DynArray;
 
-void init_dynarray(DynArray* vector);
+void init_dynarray(DynArray* dyn_array);
 
-void* element_at(DynArray* vector, size_t index);
+void* element_at(DynArray* dyn_array, size_t index);
 
-void push_back(DynArray* vector, void* value, size_t value_size);
+void push_back(DynArray* dyn_array, void* value, size_t value_size);
 
-void destroy(DynArray* vector);
+void destroy(DynArray* dyn_array);
