@@ -23,7 +23,7 @@ $(PART): $(OBJS)
 	@$(CC) $(CFLAGS) $^ -o $@
 
 run: $(PART)
-	@./$(PART)
+	@time ./$(PART)
 
 clean:
 	@rm -f $(PART) $(OBJS) $(wildcard $(DIR)/common.o)

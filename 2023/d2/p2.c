@@ -1,5 +1,4 @@
-#include "common.h"
-#include <stdio.h>
+#include "common.h" #include <stdio.h>
 #include <string.h>
 #include "../../util/dynarray.h"
 #include "../../util/input.h"

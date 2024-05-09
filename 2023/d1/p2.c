@@ -1,12 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../../util/str.h"
 
 #define LINE_BUFFER 10000
 #define NUM_WORDS_LENGTH 9
-
-int count_lines(FILE* file);
-int indexof(const char* haystack, const char* needle);
 
 const char* const NUM_WORDS[NUM_WORDS_LENGTH] = { "one", "two", "three", "four", "five", "six", "seven", "eight", "nine" };  
 FILE* input;
@@ -77,21 +75,3 @@ int main() {
     return 0;
 }
 
-int count_lines(FILE* file) {
-    int count = 0;
-    char res[LINE_BUFFER];
-    while(fgets(res, sizeof(res), file)) {
-        count++;
-    }
-    rewind(file);
-    return count;
-}
-
-int indexof(const char* haystack, const char* needle) {
-    char* needle_location = strstr(haystack, needle);
-    if (needle_location == NULL) {
-        return -1;
-    }
-
-    return needle_location - haystack; 
-}
