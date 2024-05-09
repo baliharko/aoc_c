@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../../util/str.h"
 
 #define LINE_BUFFER 10000
-
-int count_lines(FILE* file);
 
 int main() {
     FILE* file = fopen("2023/d1/input.txt", "r");
@@ -44,12 +43,3 @@ int main() {
     return 0;
 }
 
-int count_lines(FILE* file) {
-    int count = 0;
-    char res[LINE_BUFFER];
-    while(fgets(res, sizeof(res), file)) {
-        count++;
-    }
-    rewind(file);
-    return count;
-}
