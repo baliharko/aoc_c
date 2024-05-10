@@ -61,9 +61,8 @@ int main(void) {
             }
         }
 
-        if (adjacent_vals_amt == 2) {
+        if (adjacent_vals_amt == 2)
             sum += adjacent_values[0] * adjacent_values[1];
-        }
 
         memset(adjacent_values, 0, sizeof(adjacent_values));
         adjacent_vals_amt = 0;
