@@ -55,9 +55,8 @@ int main(void) {
             for (int k = value->startIdx - 1; k <= value->endIdx + 1; k++) {
                 if (k < 0 || k > input_len) continue;
 
-                if (k - LINE_LENGTH == starsIndexes[i] || k + LINE_LENGTH == starsIndexes[i]) {
+                if (k - LINE_LENGTH == starsIndexes[i] || k + LINE_LENGTH == starsIndexes[i])
                     adjacent_values[adjacent_vals_amt++] = value->value;
-                }
             }
         }
 
