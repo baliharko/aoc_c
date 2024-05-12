@@ -4,74 +4,76 @@
 #include "../../util/dynarray.h"
 #include "common.h"
 
+#define MAX_CHARS 65536 // 16 bit integer max value
 
 typedef struct {
     int value;
-    int startIdx;
-    int endIdx;
+    int start_index;
+    int end_index;
 } Value;
 
-int within_bounds(int i, Value* value);
+void parse_input(const char* input_str, const int input_len, DynArray* values, DynArray* star_indexes);
 
 int main(void) {
-    const char* input_str = input_as_cont_string("2023/d3/input.txt", MAX_CHARS);
-    const int input_len = strlen(input_str);
+    const char* INPUT_STR = input_as_cont_string("2023/d3/input.txt", MAX_CHARS);
+    const int INPUT_LEN = strlen(INPUT_STR);
 
     DynArray values;
+    DynArray star_indexes;
     init_dynarray(&values);
+    init_dynarray(&star_indexes);
 
-    char token[TOKEN_MAX] = { '\0' };
-    int tokenIdx = 0;
-    int starsIndexes[MAX_CHARS] = { 0 };
-    int starsIdx = 0;
-    for (int i = 0; i < input_len; i++) {
-        if (is_digit(input_str[i]))
-            token[tokenIdx++] = input_str[i];     
-        else if (tokenIdx > 0) {
-            Value val = { .value = atoi(token), .startIdx = i - tokenIdx, .endIdx = i - 1 };
-            push_back(&values, &val, sizeof(Value));
-            tokenIdx = 0;
-            memset(token, '\0', sizeof(token));
-        }
-
-        if (input_str[i] == '*')
-            starsIndexes[starsIdx++] = i;
-    }
+    parse_input(INPUT_STR, INPUT_LEN, &values, &star_indexes);
 
     int sum = 0;
-    for (int i = 0; i < starsIdx; i++) {
-        int star_line = starsIndexes[i] / LINE_LENGTH;
+    for (size_t i = 0; i < star_indexes.size; i++) {
+        int star_line = *((int*)element_at(&star_indexes, i)) / LINE_LENGTH;
         int adjacent_values[5] = { 0 };
-        int adjacent_vals_amt = 0;
+        int adjacent_vals_index = 0;
         for (size_t j = 0; j < values.size; j++) {
             Value* value = element_at(&values, j);
-            int value_line = value->startIdx / LINE_LENGTH;
+            int value_line = value->start_index / LINE_LENGTH;
             if (value_line < star_line - 1 || value_line > star_line + 1)
                 continue;
 
-            if (value->startIdx - 1 == starsIndexes[i] || value->endIdx + 1 == starsIndexes[i])
-                adjacent_values[adjacent_vals_amt++] = value->value;
+            int star_index = *((int*)element_at(&star_indexes, i));
+            if (value->start_index - 1 == star_index || value->end_index + 1 == star_index)
+                adjacent_values[adjacent_vals_index++] = value->value;
 
-            for (int k = value->startIdx - 1; k <= value->endIdx + 1; k++) {
-                if (k < 0 || k > input_len) continue;
+            for (int k = value->start_index - 1; k <= value->end_index + 1; k++) {
+                if (k < 0 || k > INPUT_LEN) continue;
 
-                if (k - LINE_LENGTH == starsIndexes[i] || k + LINE_LENGTH == starsIndexes[i])
-                    adjacent_values[adjacent_vals_amt++] = value->value;
+                if (k - LINE_LENGTH == star_index || k + LINE_LENGTH == star_index)
+                    adjacent_values[adjacent_vals_index++] = value->value;
             }
         }
 
-        if (adjacent_vals_amt == 2)
+        if (adjacent_vals_index == 2)
             sum += adjacent_values[0] * adjacent_values[1];
 
         memset(adjacent_values, 0, sizeof(adjacent_values));
-        adjacent_vals_amt = 0;
+        adjacent_vals_index = 0;
     }
 
     printf("sum: %d\n", sum);
     return 0;
 }
 
-int within_bounds(int i, Value* value) {
-    return i >= value->startIdx - 1 && i <= value->endIdx + 1;
+void parse_input(const char* input_str, const int input_len, DynArray* values, DynArray* star_indexes) {
+    char token[TOKEN_MAX] = { '\0' };
+    int token_index = 0;
+    for (int i = 0; i < input_len; i++) {
+        if (is_digit(input_str[i]))
+            token[token_index++] = input_str[i];     
+        else if (token_index > 0) {
+            Value val = { .value = atoi(token), .start_index = i - token_index, .end_index = i - 1 };
+            push_back(values, &val, sizeof(Value));
+            token_index = 0;
+            memset(token, '\0', sizeof(token));
+        }
+
+        if (input_str[i] == '*')
+            push_back(star_indexes, &i, sizeof(int));
+    }
 }
 
