@@ -3,6 +3,10 @@
 #include <string.h>
 #include "common.h"
 
+#define MAX_CHARS 65336 // 16 bit integer max value
+
+int is_symbol(const char c);
+
 int main(void) {
     const char* input_str = input_as_cont_string("2023/d3/input.txt", MAX_CHARS);
     const int input_len = strlen(input_str);
@@ -38,5 +42,9 @@ int main(void) {
 
     printf("sum: %d\n", sum);
     return 0;
+}
+
+int is_symbol(const char c) {
+    return (c > '9' || c < '0') && c != '.';
 }
 
