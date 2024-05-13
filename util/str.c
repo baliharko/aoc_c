@@ -22,3 +22,7 @@ int indexof(const char* haystack, const char* needle) {
 
     return needle_location - haystack; 
 }
+
+int is_digit(const char c) {
+    return c >= '0' && c <= '9';
+}
