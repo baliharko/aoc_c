@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../../util/str.h"
 #include "common.h"
+#include "../../util/str.h"
 
 void populate_array(const char* line, int start_index, int end_index, char* out);
 
@@ -13,9 +13,13 @@ int main(void) {
         return 1;
     }
 
-    unsigned int points_sum = 0;
+    int lines = count_lines(input);
+    int cards[lines];
+    for (int i = 0; i < lines; i++) 
+        cards[i] = 1;
 
     char line[MAX_CHARS];
+    unsigned int current_line = 0;
     while(fgets(line, MAX_CHARS, input)) {
         int colon_index = indexof(line, ":");
         int pipe_index = indexof(line, "|");
@@ -31,13 +35,24 @@ int main(void) {
             if (!(numbers[i] == 1 && winning_numbers[i] == 1))
                 continue;
 
-            line_sum = line_sum == 0 ? 1 : line_sum << 1;
+            line_sum++;
         }
 
-        points_sum += line_sum;
+        for (int i = 0; i < cards[current_line]; i++) {
+            for (int j = current_line + 1; j < current_line + 1 + line_sum ; j++) {
+                cards[j]++;
+            }
+        }
+
+        current_line++;
     }
 
-    printf("sum: %d\n", points_sum);
+    unsigned int sum = 0;
+    for (int i = 0; i < lines; i++) {
+        sum += cards[i];
+    }
+
+    printf("sum: %d\n", sum);
     return 0;
 }
 
