@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../../util/str.h"
+#include "str.h"
 #include "common.h"
 
 void populate_array(const char* line, int start_index, int end_index, char* out);

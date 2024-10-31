@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
-#include "../../util/input.h"
-#include "../../util/dynarray.h"
+#include "input.h"
+#include "dynarray.h"
 #include "common.h"
 
 #define MAX_CHARS 65536 // 16 bit integer max value

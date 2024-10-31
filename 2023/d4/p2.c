@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "common.h"
-#include "../../util/str.h"
+#include "str.h"
 
 void populate_array(const char* line, int start_index, int end_index, char* out);
 
