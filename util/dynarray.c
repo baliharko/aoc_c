@@ -31,7 +31,12 @@ void* element_at(DynArray* dyn_array, size_t index) {
 void push_back(DynArray* dyn_array, void* value, size_t value_size) {
     if(dyn_array->size == dyn_array->capacity) {
         dyn_array->capacity *= 2;
-        dyn_array->data = (void**) realloc(dyn_array->data, dyn_array->capacity * sizeof(void*));
+        void** temp_data = (void**) realloc(dyn_array->data, dyn_array->capacity * sizeof(void*));
+        if (temp_data == NULL) {
+            fprintf(stderr, "Failed to reallocate memory\n");
+            exit(EXIT_FAILURE);
+        }
+        dyn_array->data = temp_data;
     }
     
     dyn_array->data[dyn_array->size] = malloc(value_size);

@@ -1,0 +1,50 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-I./util",
+      "-c",
+      "-o",
+      "util/dynarray.o",
+      "util/dynarray.c"
+    ],
+    "directory": "/Users/balazs.harko/dev/aoc_c",
+    "file": "/Users/balazs.harko/dev/aoc_c/util/dynarray.c",
+    "output": "/Users/balazs.harko/dev/aoc_c/util/dynarray.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-I./util",
+      "-c",
+      "-o",
+      "util/input.o",
+      "util/input.c"
+    ],
+    "directory": "/Users/balazs.harko/dev/aoc_c",
+    "file": "/Users/balazs.harko/dev/aoc_c/util/input.c",
+    "output": "/Users/balazs.harko/dev/aoc_c/util/input.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Wall",
+      "-Wextra",
+      "-std=c99",
+      "-I./util",
+      "-c",
+      "-o",
+      "util/str.o",
+      "util/str.c"
+    ],
+    "directory": "/Users/balazs.harko/dev/aoc_c",
+    "file": "/Users/balazs.harko/dev/aoc_c/util/str.c",
+    "output": "/Users/balazs.harko/dev/aoc_c/util/str.o"
+  }
+]

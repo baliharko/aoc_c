@@ -1,7 +1,8 @@
-#include "common.h" #include <stdio.h>
+#include <stdio.h>
 #include <string.h>
-#include "../../util/dynarray.h"
-#include "../../util/input.h"
+#include "common.h" 
+#include "dynarray.h"
+#include "input.h"
 
 
 void tokenize(char* str, char* delimiter, char** target, int target_size);

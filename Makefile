@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := all
 
 CC := gcc
-CFLAGS := -Wall -Wextra -std=c99
+CFLAGS := -fsanitize=address -Wall -Wextra -std=c99 -I./util
 
 DAY :=
 DIR := $(shell dirname "$(DAY)" | sed 's/\/p.*//')
