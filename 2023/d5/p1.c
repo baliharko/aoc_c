@@ -1,74 +1,36 @@
-#include <stdint.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <limits.h>
 #include "dynarray.h"
 #include "str.h"
+#include <stdbool.h>
+#include <stdio.h>
 #include "macro.h"
 
-#define MAX_CHARS 65536
+#define LINE_LIMIT 65536
 #define MAPS_AMT 7
 
+
 typedef struct {
-    int destinationRangeStart;
-    int sourceRangeStart;
-    int rangeLength;
+    int64_t first;
+    int64_t last;
 } Range;
 
-typedef struct {
-    DynArray* ranges;
-} ResourceMap;
-
-ResourceMap* newResourceMap() {
-    ResourceMap* map = malloc(sizeof(ResourceMap));
-    if (map == NULL) {
-        printf("Failed to allocate memory for new ResourceMap\n");
-        return NULL;
-    }
-
-    DynArray* r = malloc(sizeof(DynArray));
-    if (r == NULL) {
-        printf("Failed to allocate memory for new DynArray\n");
-        return NULL;
-    }
-
-    init_dynarray(r);
-    map->ranges = r;
-    return map;
-}
+typedef struct MapRange {
+    Range range;
+    int64_t offset;
+} MapRange;
 
 void getSeeds(const char* line, DynArray* seeds) {
     const char* pos = line;
     pos += strlen("seeds: ");
     while (*pos) {
-        char* end;
-        uint64_t seed = strtol(pos, &end, 10);
+        char *end;
+        int64_t seed = strtol(pos, &end, 10);
 
         if (pos == end) break;
 
-        push_back(seeds, &seed, sizeof(long));
+        push_back(seeds, &seed, sizeof(int64_t));
         pos = end;
         pos += strspn(pos, " ");
     }
-}
-
-int mapSeed(ResourceMap* map, int seed) {
-    int rangesLen = map->ranges->size;
-    for (int i = 0; i < rangesLen; i++) {
-        Range* r = element_at(map->ranges, i);
-        if (seed < r->sourceRangeStart) continue;
-
-        if (seed >= r->sourceRangeStart && seed < r->sourceRangeStart + r->rangeLength) {
-            int offset = seed - r->sourceRangeStart;
-            return r->destinationRangeStart + offset;
-        }
-    }
-
-    return seed; 
-}
-
-void printRange(Range* range) {
-    printf("%d %d %d\n", range->destinationRangeStart, range->sourceRangeStart, range->rangeLength);
 }
 
 int main(void) {
@@ -78,50 +40,70 @@ int main(void) {
         return 1;
     }
 
-    ResourceMap maps[MAPS_AMT];
+    DynArray maps[7];
     for (int i = 0; i < MAPS_AMT; i++) {
-        maps[i] = *newResourceMap();
+        init_dynarray(&maps[i]);
     }
 
     DynArray seeds;
     init_dynarray(&seeds);
 
-    int mapIdx = -1;
-    char line[MAX_CHARS];
-    int firstLine = true;
-    while(fgets(line, MAX_CHARS, input)) {
-        if (firstLine) {
-            firstLine = false;
-            getSeeds(line, &seeds);
-            continue;
-        }
+    char line[LINE_LIMIT];
 
-        if (line[0] == '\n') 
-            continue;
+    // get the first line
+    fgets(line, LINE_LIMIT, input);
+    getSeeds(line, &seeds);
+
+    // get the rest
+    int mapIdx = -1;
+    while(fgets(line, LINE_LIMIT, input)) {
+        if (line[0] == '\n') continue;
 
         if (indexof(line, "-to-") > 0) {
             mapIdx++;
             continue;
         }
 
-        Range range;
-        if (sscanf(line, "%d %d %d", &range.destinationRangeStart, &range.sourceRangeStart, &range.rangeLength)) {
-            push_back(maps[mapIdx].ranges, &range, sizeof(Range));
+        int64_t dest;
+        int64_t source;
+        int64_t length;
+        if (sscanf(line, "%lld %lld %lld", &dest, &source, &length) == 3) {
+            MapRange mapRange;
+            Range range;
+            range.first = source;
+            range.last = source + length - 1;
+            mapRange.range = range;
+            mapRange.offset = dest - source; 
+            push_back(&maps[mapIdx], &mapRange, sizeof(MapRange));
+        }
+    }
+ 
+    for (int i = 0; i < MAPS_AMT; i++) {
+        DynArray map = maps[i];
+        for (size_t j = 0; j < seeds.size; j++) {
+            int64_t *seed = element_at(&seeds, j);
+            for (size_t k = 0; k < map.size; k++) {
+                MapRange *mr = element_at(&map, k);
+                if (*seed >= mr->range.first && *seed <= mr->range.last) {
+                    *seed = *seed + mr->offset;
+                    break;
+                }
+            }    
         }
     }
 
-    uint64_t ans = ULONG_MAX;
-    for (int i = 0; i < (int)seeds.size; i++) {
-        unsigned long seed = *(int*)element_at(&seeds, i);
-        unsigned long mapped = seed;
-        for (int j = 0; j < MAPS_AMT; j++) {
-            mapped = mapSeed(&maps[j], mapped);
-        }
-
-        ans = MIN(ans, mapped);
+    int64_t ans = INT64_MAX;
+    for (size_t i = 0; i < seeds.size; i++) {
+        int64_t *seed = element_at(&seeds, i); 
+        ans = MIN(ans, *seed);
     }
-    printf("%llu\n", ans);
+
+    printf("ans: %lld\n", ans);
+
+    destroy(&seeds);
+    for (int i = 0; i < MAPS_AMT; i++) {
+        destroy(&maps[i]);
+    }
 
     return 0;
 }
-
