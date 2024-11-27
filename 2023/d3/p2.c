@@ -56,6 +56,9 @@ int main(void) {
     }
 
     printf("sum: %d\n", sum);
+
+    free((char*)INPUT_STR);
+    INPUT_STR = NULL;
     return 0;
 }
 
