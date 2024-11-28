@@ -38,13 +38,22 @@ void lines_to_dynarray(const char* filepath, DynArray* dyn_array) {
 // Removes newline chars
 const char* input_as_cont_string(const char* filepath, uint32_t max_len) {
     FILE* file = open_file(filepath, "r");
-    char* target = (char*)malloc(sizeof(char*) * max_len);
+    char* target = (char*)malloc(max_len);
+    target[0] = '\n';
 
+    size_t len = 0;
     char curr_char;
     while ((curr_char = fgetc(file)) != EOF) {
-        if (curr_char != '\n')
-            strlcat(target, &curr_char, max_len);
+        if (curr_char != '\n') {
+            if (len + 1 < max_len) {
+                target[len++] = curr_char;
+            } else {
+                fprintf(stderr, "Prevented buffer overflow\n");
+                break;
+            }
+        }
     }
+    target[len] = '\n';
 
     fclose(file);
     return target;

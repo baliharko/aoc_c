@@ -3,6 +3,7 @@
 #include "input.h"
 #include "dynarray.h"
 #include "common.h"
+#include "str.h"
 
 #define MAX_CHARS 65536 // 16 bit integer max value
 
