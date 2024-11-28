@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "common.h"
+#include "str.h"
 
 #define MAX_CHARS 65336 // 16 bit integer max value
 
