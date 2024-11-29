@@ -4,24 +4,7 @@
 #include "dynarray.h"
 #include "str.h"
 #include "macro.h"
-
-#define LINE_LIMIT 65536
-#define MAPS_AMT 7
-
-
-typedef struct {
-    int64_t first;
-    int64_t last;
-} Range;
-
-typedef struct MapRange {
-    Range range;
-    int64_t offset;
-} MapRange;
-
-void printRange(Range *r) {
-    printf("{ %lld, %lld }", r->first, r->last);
-}
+#include "common.h"
 
 void getSeedRanges(const char* line, DynArray* seedRanges) {
     const char* pos = line;
@@ -41,6 +24,62 @@ void getSeedRanges(const char* line, DynArray* seedRanges) {
 
         pos = end;
         pos += strspn(pos, " ");
+    }
+}
+
+void swapArrays(DynArray *a, DynArray *b) {
+    DynArray temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void mapRanges(DynArray *seedRanges, DynArray maps[]) {
+    for (int i = 0; i < MAPS_AMT; i++) {
+        DynArray mappedRanges;
+        init_dynarray(&mappedRanges);
+        DynArray map = maps[i];
+        while (seedRanges->size > 0) {
+            Range seedRange;
+            pop(seedRanges, &seedRange, sizeof(Range));
+            bool mapped = false;
+            for (size_t k = 0; k < map.size; k++) {
+                MapRange *mr = element_at(&map, k);
+                if (seedRange.first > mr->range.last || seedRange.last < mr->range.first) {
+                    continue;
+                }
+
+                mapped = true;
+                int64_t overlapFirst = MAX(seedRange.first, mr->range.first);
+                int64_t overlapLast = MIN(seedRange.last, mr->range.last);
+                Range overlapRange; 
+                overlapRange.first = overlapFirst + mr->offset;
+                overlapRange.last = overlapLast + mr->offset;
+                push_back(&mappedRanges, &overlapRange, sizeof(Range));
+
+                if (seedRange.first < overlapFirst) {
+                    Range r;
+                    r.first = seedRange.first;
+                    r.last = overlapFirst - 1;
+                    push_back(seedRanges, &r, sizeof(Range));
+                }
+
+                if (seedRange.last > overlapLast) {
+                    Range r;
+                    r.first = overlapLast + 1;
+                    r.last = seedRange.last;
+                    push_back(seedRanges, &r, sizeof(Range));
+                }
+
+                break;
+            }
+
+            if (!mapped) {
+                push_back(&mappedRanges, &seedRange, sizeof(Range));
+            }
+        }
+
+        swapArrays(seedRanges, &mappedRanges);
+        destroy(&mappedRanges);
     }
 }
 
@@ -87,55 +126,7 @@ int main(void) {
         }
     }
 
-    for (int i = 0; i < MAPS_AMT; i++) {
-        DynArray mappedRanges;
-        init_dynarray(&mappedRanges);
-        DynArray map = maps[i];
-        while (seedRanges.size > 0) {
-            Range seedRange;
-            pop(&seedRanges, &seedRange, sizeof(Range));
-            bool mapped = false;
-            for (size_t k = 0; k < map.size; k++) {
-                MapRange *mr = element_at(&map, k);
-                if (seedRange.first > mr->range.last || seedRange.last < mr->range.first) {
-                    continue;
-                }
-
-                mapped = true;
-                int64_t overlapFirst = MAX(seedRange.first, mr->range.first);
-                int64_t overlapLast = MIN(seedRange.last, mr->range.last);
-                Range overlapRange;
-                overlapRange.first = overlapFirst + mr->offset;
-                overlapRange.last = overlapLast + mr->offset;
-                push_back(&mappedRanges, &overlapRange, sizeof(Range));
-
-                if (seedRange.first < overlapFirst) {
-                    Range r;
-                    r.first = seedRange.first;
-                    r.last = overlapFirst - 1;
-                    push_back(&seedRanges, &r, sizeof(Range));
-                }
-
-                if (seedRange.last > overlapLast) {
-                    Range r;
-                    r.first = overlapLast + 1;
-                    r.last = seedRange.last;
-                    push_back(&seedRanges, &r, sizeof(Range));
-                }
-
-                break;
-            }
-
-            if (!mapped) {
-                push_back(&mappedRanges, &seedRange, sizeof(Range));
-            }
-        }
-
-        DynArray temp = seedRanges;
-        seedRanges = mappedRanges;
-        mappedRanges = temp;
-        destroy(&mappedRanges);
-    }
+    mapRanges(&seedRanges, maps);
 
     int64_t ans = INT64_MAX;
     for (size_t i = 0; i < seedRanges.size; i++) {
@@ -149,6 +140,7 @@ int main(void) {
     for (int i = 0; i < MAPS_AMT; i++) {
         destroy(&maps[i]);
     }
+
     return 0;
 }
 
