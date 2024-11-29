@@ -126,6 +126,7 @@ int main(void) {
         }
     }
 
+    fclose(input);
     mapRanges(&seedRanges, maps);
 
     int64_t ans = INT64_MAX;

@@ -64,6 +64,8 @@ int main(void) {
             push_back(&maps[mapIdx], &mapRange, sizeof(MapRange));
         }
     }
+
+    fclose(input);
  
     for (int i = 0; i < MAPS_AMT; i++) {
         DynArray map = maps[i];
