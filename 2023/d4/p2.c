@@ -39,7 +39,7 @@ int main(void) {
         }
 
         for (int i = 0; i < cards[current_line]; i++) {
-            for (int j = current_line + 1; j < current_line + 1 + line_sum ; j++) {
+            for (unsigned int j = current_line + 1; j < current_line + 1 + line_sum ; j++) {
                 cards[j]++;
             }
         }
