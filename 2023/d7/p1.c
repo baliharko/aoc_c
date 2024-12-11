@@ -28,7 +28,7 @@ enum HandType {
 
 typedef struct {
     char *cards;
-    enum HandType combo;
+    enum HandType handType;
     int bid;
 } Hand;
 
@@ -129,30 +129,30 @@ void sortHands(DynArray *hands) {
         for (size_t j = 0; j < hands->size - i - 1; j++) {
             Hand *h1 = element_at(hands, j);
             Hand *h2 = element_at(hands, j + 1);
-            if (h1->combo > h2->combo) {
+            if (h1->handType > h2->handType) {
                 swap(h1, h2);          
             }
         }
     } 
     
-    Range comboChunkIndexes[FIVE_OF_A_KIND + 1] = { {0, 0} };
-    enum HandType currentCombo = 0;
+    Range handTypeChunkIndexes[FIVE_OF_A_KIND + 1] = { {0, 0} };
+    enum HandType currentHandType = 0;
     for (size_t i = 0; i < hands->size; i++) {
         Hand *h = element_at(hands, i);
 
-        if (h->combo > currentCombo) {
-            comboChunkIndexes[currentCombo].last = i - 1; 
-            comboChunkIndexes[++currentCombo].first = i;
+        if (h->handType > currentHandType) {
+            handTypeChunkIndexes[currentHandType].last = i - 1; 
+            handTypeChunkIndexes[++currentHandType].first = i;
         }
 
         if (i == hands->size - 1) {
-            comboChunkIndexes[currentCombo].last = i;
+            handTypeChunkIndexes[currentHandType].last = i;
         }
     }
 
     const char *VALUES = "23456789TJQKA";
     for (int i = 0; i <= FIVE_OF_A_KIND; i++) {
-        Range r = comboChunkIndexes[i];
+        Range r = handTypeChunkIndexes[i];
 
         if (r.first == r.last) continue;
 
@@ -192,7 +192,7 @@ int main(void) {
         char **toks = tokens(line);
         Hand h;
         h.cards = strdup(*toks);
-        h.combo = getHandType(h.cards);
+        h.handType = getHandType(h.cards);
         h.bid = atoi(toks[1]);
         push_back(&hands, &h, sizeof(Hand));
     }
