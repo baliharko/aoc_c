@@ -33,7 +33,7 @@ typedef struct {
 } Hand;
 
 enum HandType getHandType(const char* cards) {
-    int chars[127] = { 0 };
+    int8_t chars[127] = { 0 };
 
     int len = strlen(cards);
     for (int i = 0; i < len; i++) {
@@ -64,27 +64,49 @@ enum HandType getHandType(const char* cards) {
         }
     }
 
+    int8_t jokers = chars['J'];
     switch(occurrences) {
         case 1:
             return FIVE_OF_A_KIND; // [5]
             break;
         case 2:
-            if (nonZeroOccurrences[0] == 4) // [4, 1]
-                return FOUR_OF_A_KIND;
-            else
-                return FULL_HOUSE; // [3, 2]
+            if (nonZeroOccurrences[0] == 4) { // [4, 1]
+                if (jokers == 1 || jokers == 4) 
+                    return FIVE_OF_A_KIND;
+                else 
+                    return FOUR_OF_A_KIND;
+            } else
+                if (jokers != 0)
+                    return FIVE_OF_A_KIND;
+                else
+                    return FULL_HOUSE; // [3, 2]
             break;
         case 3:
             if (nonZeroOccurrences[0] == 3) // [3, 1, 1]
-                return THREE_OF_A_KIND;
-            else
-                return TWO_PAIR; // [2, 2, 1]
+                if (jokers == 1 || jokers == 3)
+                    return FOUR_OF_A_KIND;
+                else
+                    return THREE_OF_A_KIND;
+            else {
+                if (jokers == 1)
+                    return FULL_HOUSE;
+                else if (jokers == 2)
+                    return FOUR_OF_A_KIND;
+                else
+                    return TWO_PAIR; // [2, 2, 1]
+            }
             break;
         case 4:
-            return ONE_PAIR; // [2, 1, 1, 1]
+            if (jokers == 1 || jokers == 2)
+                return THREE_OF_A_KIND;
+            else
+                return ONE_PAIR; // [2, 1, 1, 1]
             break;
         default:
-            return HIGH_CARD; // [1, 1, 1, 1, 1]
+            if (jokers == 1)
+                return ONE_PAIR;
+            else
+                return HIGH_CARD; // [1, 1, 1, 1, 1]
             break;
     }
 }
@@ -150,7 +172,7 @@ void sortHands(DynArray *hands) {
         }
     }
 
-    const char *VALUES = "23456789TJQKA";
+    const char *VALUES = "J23456789TQKA";
     for (int i = 0; i <= FIVE_OF_A_KIND; i++) {
         Range r = handTypeChunkIndexes[i];
 
