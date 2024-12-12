@@ -196,6 +196,7 @@ int main(void) {
         h.bid = atoi(toks[1]);
         push_back(&hands, &h, sizeof(Hand));
     }
+    fclose(input);
 
     sortHands(&hands);
 
