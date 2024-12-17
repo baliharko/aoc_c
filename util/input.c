@@ -1,12 +1,9 @@
 #include "input.h"
 #include "dynarray.h"
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <wchar.h>
 
-#define LINE_BUFFER 1024
+#define LINE_BUFFER 65536
 
 static FILE* open_file(const char* filepath, const char* mode) {
     FILE* file = fopen(filepath, mode);
