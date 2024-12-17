@@ -1,3 +1,6 @@
+#include <assert.h>
+#include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -76,7 +79,44 @@ int simpleHash(const char* str) {
 typedef struct {
     char* left;
     char* right;
-} Pair;
+} Node;
+
+int64_t mod(int64_t a, int64_t b) {
+    int res = a % b;
+    if ((res > 0 && b < 0) || (res < 0 && b > 0)) {
+        res += b;
+    }
+    return res;
+}
+
+uint64_t gcd(uint64_t a, uint64_t b) {
+    while (b != 0) {
+        uint64_t tmp = a;
+        a = b;
+        b = mod(tmp, b);
+    } 
+
+    return a;
+}
+
+uint64_t lcm(uint64_t a, uint64_t b) {
+    return a * b / gcd(a, b);
+}
+
+bool allTrue(bool arr[], int size) {
+    for (int i = 0; i < size; i++) {
+        if (!arr[i]) { 
+            return false;
+        }
+    }
+
+    return true;
+}
+
+typedef struct {
+    char* current;
+    uint32_t cycles;
+} Ghost;
 
 int main(void) {
     FILE *input = fopen("2023/d8/input.txt", "r");
@@ -88,7 +128,9 @@ int main(void) {
     char instructions[LINE_MAX];
     fgets(instructions, LINE_MAX, input);;
     
-    Pair pairs[26 * 26 * 26];
+    Node nodes[26 * 26 * 26];
+    char* startingNodes[700] = { NULL };
+    int startingNodesIdx = 0;
     
     char line[LINE_MAX];
     while (fgets(line, LINE_MAX, input)) {
@@ -97,30 +139,62 @@ int main(void) {
 
         char* sanitized = sanitize(line);
         char **toks = tokens(sanitized, " "); 
-        Pair p;
+        Node p;
         p.left = toks[1];
         p.right = toks[2];
-        pairs[simpleHash(toks[0])] = p;
+        nodes[simpleHash(toks[0])] = p;
+
+        if (toks[0][2] == 'A') {
+            startingNodes[startingNodesIdx++] = toks[0];
+        }
     }
 
     fclose(input);
 
-    int len = strlen(instructions);
-    char *current = "AAA";
-    int steps = 0;
-    for (int i = 0; i < len; i++) {
-        if (i == len - 1)
-            i = 0;
-
-        if (strncmp(current, "ZZZ", 3) == 0) 
-            break; 
-
-
-        int hash = simpleHash(current);
-        current = instructions[i] == 'L' ? pairs[hash].left : pairs[hash].right;
-        steps++;
+    int instructionsLen = strlen(instructions) - 1;
+    Ghost ghosts[startingNodesIdx];
+    for (int i = 0; i < startingNodesIdx; i++) {
+        ghosts[i].cycles = 0;
+        ghosts[i].current = startingNodes[i];
     }
 
-    printf("steps: %d\n", steps);
+    bool arrived[startingNodesIdx];
+    for (int i = 0; i < startingNodesIdx; i++) {
+        arrived[i] = false;
+    }
+
+    int currCycle = 0;
+    while (!allTrue(arrived, startingNodesIdx)) {
+        for (int i = 0; i < instructionsLen; i++) {
+            for (int ghost = 0; ghost < startingNodesIdx; ghost++) {
+                if (arrived[ghost]) continue;
+
+                Ghost *g = &ghosts[ghost];
+                int hash = simpleHash(g->current);
+                Node n = nodes[hash];
+                g->current = instructions[i] == 'L' ? n.left : n.right;
+            }
+        } 
+        currCycle++;
+        
+        for (int ghost = 0; ghost < startingNodesIdx; ghost++) {
+            if (arrived[ghost]) continue;
+
+            Ghost *g = &ghosts[ghost];
+            if (g->current[2] == 'Z') {
+                g->cycles = currCycle;
+                arrived[ghost] = true;
+            }
+        }
+    }
+
+    uint64_t minSharedCycles = 1;
+    for (int i = 0; i < startingNodesIdx; i++) {
+        minSharedCycles = lcm(minSharedCycles, ghosts[i].cycles);
+    }
+
+    uint64_t ans = minSharedCycles * instructionsLen;
+    printf("ans: %llu\n", ans);
+
     return 0;
 }
