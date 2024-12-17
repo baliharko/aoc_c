@@ -106,23 +106,6 @@ enum HandType getHandType(const char* cards) {
     }
 }
 
-// char **tokens(char *str) {
-//     char **tokens = malloc(TOKENS_COUNT * sizeof(char*));
-//     char *token = strtok(str, " ");
-//     int i = 0;
-//     do {
-//         int len = strlen(token);
-//         if (token[len - 1] == '\n') {
-//             token[len - 1] = '\0';
-//         }
-//
-//         tokens[i++] = token;
-//         token = strtok(NULL, " ");
-//     } while (token != NULL);
-//
-//     return tokens;
-// }
-
 void swap(Hand *a, Hand *b) {
     Hand temp = *a;
     *a = *b;
