@@ -8,3 +8,7 @@ int count_lines(FILE* file);
 int indexof(const char* haystack, const char* needle);
 
 int is_digit(const char c);
+
+char **tokens(char *str, const char *delimiter);
+
+char* strReplace(char *str, const char *search, const char *replace);

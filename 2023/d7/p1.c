@@ -1,7 +1,5 @@
 #include "dynarray.h"
-#include <assert.h>
-#include <stddef.h>
-#include <stdint.h>
+#include "str.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,23 +87,6 @@ enum HandType getHandType(const char* cards) {
     }
 }
 
-char **tokens(char *str) {
-    char **tokens = malloc(TOKENS_COUNT * sizeof(char*));
-    char *token = strtok(str, " ");
-    int i = 0;
-    do {
-        int len = strlen(token);
-        if (token[len - 1] == '\n') {
-            token[len - 1] = '\0';
-        }
-
-        tokens[i++] = token;
-        token = strtok(NULL, " ");
-    } while (token != NULL);
-
-    return tokens;
-}
-
 void swap(Hand *a, Hand *b) {
     Hand temp = *a;
     *a = *b;
@@ -189,7 +170,7 @@ int main(void) {
 
     char line[LINE_MAX];
     while (fgets(line, LINE_MAX, input)) {
-        char **toks = tokens(line);
+        char **toks = tokens(line, " ");
         Hand h;
         h.cards = strdup(*toks);
         h.handType = getHandType(h.cards);
