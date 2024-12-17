@@ -1,10 +1,10 @@
-#include "math.h"
-#include "str.h"
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
-#include "common.h"
 
+#include "math.h"
+#include "str.h"
+#include "common.h"
 
 bool allTrue(bool arr[], int size) {
     for (int i = 0; i < size; i++) {
