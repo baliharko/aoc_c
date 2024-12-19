@@ -29,7 +29,7 @@ void parseLines(long boats[][2], FILE *input) {
     }
 }
 
-long countTokens(char *line) {
+long countToks(char *line) {
     long tokens = 0;
     char *token;
     token = strtok(line, " ");
@@ -50,7 +50,7 @@ int main(void) {
 
     char line[LINE_MAX];
     fgets(line, LINE_MAX, input);
-    int nums = countTokens(line) - 1; 
+    int nums = countToks(line) - 1; 
     rewind(input);
 
     long boats[nums][2];

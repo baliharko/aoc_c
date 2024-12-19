@@ -1,21 +1,10 @@
 #include <stdbool.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "str.h"
+#include "common.h"
     
-#define LINE_MAX 65536
-
-bool all(int arr[], size_t size, int compare) {
-    for (size_t i = 0; i < size; i++) {
-        if (arr[i] != compare) 
-            return false;
-    }
-
-    return true;
-}
-
 int getSequence(int seq[], size_t size) {
     if (all(seq, size, 0)) {
         return 0;
@@ -45,7 +34,7 @@ int main(void) {
     int ans = 0;
     while(fgets(line, LINE_MAX, input)) {
         if (firstLine) {
-            tokensCount = countTokens(line);
+            tokensCount = countToks(line);
             firstLine = false;
         }
 
