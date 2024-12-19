@@ -11,6 +11,6 @@ int is_digit(const char c);
 
 char **tokens(char *str, const char *delimiter);
 
-int countTokens(const char *line);
+int countToks(const char *line);
 
 char* strReplace(char *str, const char *search, const char *replace);
