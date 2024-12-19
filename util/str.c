@@ -54,6 +54,15 @@ char **tokens(char *str, const char* delimiter) {
     return tokens;
 }
 
+int countTokens(const char *line) {
+    int count = 0;
+    for (const char *p = line; *p != '\0'; ++p) {
+        if (*p == ' ') count++;
+    }
+
+    return count + 1;
+}
+
 char* strReplace(char *str, const char *search, const char *replace) {
     int originalLen = strlen(str);
     int searchLen = strlen(search);
