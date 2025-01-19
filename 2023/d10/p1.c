@@ -6,7 +6,7 @@
 #include <assert.h>
 
 #include "math.h"
-#include "queue.h"
+#include "str.h"
 
 #define LINE_MAX 65536
 #define FILE_NAME "input.txt"
@@ -29,7 +29,7 @@ typedef struct Node {
     Point *p;
     struct Node* neighbours[4];
     int idx;
-    int loopPosition;
+    int loopPosition; // amount of steps taken in a loop going in one direction
 } Node;
 
 void initNode(Node* n) {
@@ -70,18 +70,6 @@ void setNodes(Node *nodes, Point *points, int size) {
     }
 }
 
-int idxof(const char *haystack, char c) {
-    int idx = -1;
-    size_t len = strlen(haystack);
-    for (size_t i = 0; i < len; i++) {
-        if (haystack[i] == c) {
-            idx = i;
-            break;
-        }
-    }
-    return idx;
-}
-
 bool connects(Point *p1, Point *p2, enum Direction dir) {
     static const char *n = "|LJ";
     static const char *e = "-LF";
@@ -97,16 +85,16 @@ bool connects(Point *p1, Point *p2, enum Direction dir) {
 
     switch(dir) {
         case N:
-            if (idxof(n, p1->c) >= 0 && idxof(s, p2->c) >= 0) return true;
+            if (indexof_c(n, p1->c) >= 0 && indexof_c(s, p2->c) >= 0) return true;
             break;
         case E:
-            if (idxof(e, p1->c) >= 0 && idxof(w, p2->c) >= 0) return true;
+            if (indexof_c(e, p1->c) >= 0 && indexof_c(w, p2->c) >= 0) return true;
             break;
         case S:
-            if (idxof(s, p1->c) >= 0 && idxof(n, p2->c) >= 0) return true;
+            if (indexof_c(s, p1->c) >= 0 && indexof_c(n, p2->c) >= 0) return true;
             break;
         case W:
-            if (idxof(w, p1->c) >= 0 && idxof(e, p2->c) >= 0) return true;
+            if (indexof_c(w, p1->c) >= 0 && indexof_c(e, p2->c) >= 0) return true;
             break;
         default:
             return false;
@@ -114,25 +102,6 @@ bool connects(Point *p1, Point *p2, enum Direction dir) {
     }
 
     return false;
-}
-
-void bfs(bool *visited, Queue *q) {
-    while(q->count != 0) {
-        Node *n = NULL;
-        dequeue(q, &n);
-
-        if (visited[n->idx]) 
-            continue;
-
-        visited[n->idx] = true;
-        for (int i = 0; i <= W; i++) {
-            Node *nb = n->neighbours[i];
-            if (nb && nb->p && connects(n->p, nb->p, i) && !visited[nb->idx]) {
-                nb->loopPosition = n->loopPosition + 1;
-                enqueue(q, &nb);
-            }
-        }
-    } 
 }
 
 void dfs(Node *n, bool visited[]) {
@@ -148,29 +117,13 @@ void dfs(Node *n, bool visited[]) {
     }
 }
 
-void calculateLoopLength(Node *start, int size) {
+void calculateNodePositions(Node *start, int size) {
     bool visited[size];
     for (int i = 0; i < size; i++) {
         visited[i] = false;
     }
 
-    // Queue q;
-    // initQueue(&q, sizeof(Node*));
-
     start->loopPosition = 0;
-
-    // enqueue(&q, &start);
-
-    // should do DFS to find which is the valid path and THEN calculate the distance...
-
-    /*
-        * DFS to find loop
-        * Use queue (BFS style) to check distance of loop start and return point to find furthest point.
-        (or divide total distance by 2...)
-    */
-
-    // bfs(visited, &q);
-
     dfs(start, visited);
 }
 
@@ -213,7 +166,7 @@ int main(void) {
     }
 
     setNodes(nodes, points, size);
-    calculateLoopLength(&nodes[startIdx], size * size);
+    calculateNodePositions(&nodes[startIdx], size * size);
 
     int ans = 0;
     for (int i = 0; i < size * size; i++) {
@@ -223,7 +176,7 @@ int main(void) {
         }
     }
 
-    ans = (ans + 1) / 2;
+    ans = (ans + 1) / 2; // +1 since loop starts from 0
     printf("ans: %d\n", ans);
 
     assert(ans == 6923);

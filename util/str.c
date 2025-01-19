@@ -85,3 +85,15 @@ char* strReplace(char *str, const char *search, const char *replace) {
     return out;
 }
 
+int indexof_c(const char *haystack, char c) {
+    int idx = -1;
+    size_t len = strlen(haystack);
+    for (size_t i = 0; i < len; i++) {
+        if (haystack[i] == c) {
+            idx = i;
+            break;
+        }
+    }
+    return idx;
+}
+
