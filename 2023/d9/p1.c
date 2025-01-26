@@ -34,7 +34,7 @@ int main(void) {
     int ans = 0;
     while(fgets(line, LINE_MAX, input)) {
         if (firstLine) {
-            tokensCount = countToks(line);
+            tokensCount = countTokens(line);
             firstLine = false;
         }
 

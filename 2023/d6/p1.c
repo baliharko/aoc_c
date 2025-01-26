@@ -50,7 +50,7 @@ int main(void) {
 
     char line[LINE_MAX];
     fgets(line, LINE_MAX, input);
-    int nums = countToks(line) - 1; 
+    long nums = countToks(line) - 1; 
     rewind(input);
 
     long boats[nums][2];

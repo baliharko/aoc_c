@@ -112,18 +112,6 @@ void swap(Hand *a, Hand *b) {
     *b = temp;
 }
 
-int idxof(const char *haystack, char c) {
-    int idx = -1;
-    size_t len = strlen(haystack);
-    for (size_t i = 0; i < len; i++) {
-        if (haystack[i] == c) {
-            idx = i;
-            break;
-        }
-    }
-    return idx;
-}
-
 void sortHands(DynArray *hands) {
     for (size_t i = 0; i < hands->size - 1; i++) {
         for (size_t j = 0; j < hands->size - i - 1; j++) {
@@ -162,8 +150,8 @@ void sortHands(DynArray *hands) {
                 Hand *h1 = element_at(hands, k);
                 Hand *h2 = element_at(hands, k + 1);
                 for (int v = 0; v < CARDS_PER_HAND; v++) {
-                    int h1Rank = idxof(VALUES, h1->cards[v]);
-                    int h2Rank = idxof(VALUES, h2->cards[v]);
+                    int h1Rank = indexof_c(VALUES, h1->cards[v]);
+                    int h2Rank = indexof_c(VALUES, h2->cards[v]);
 
                     if (h1Rank < h2Rank) break;
 

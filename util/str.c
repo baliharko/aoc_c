@@ -54,7 +54,7 @@ char **tokens(char *str, const char* delimiter) {
     return tokens;
 }
 
-int countToks(const char *line) {
+int countTokens(const char *line) {
     int count = 0;
     for (const char *p = line; *p != '\0'; ++p) {
         if (*p == ' ') count++;
