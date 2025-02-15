@@ -37,19 +37,30 @@ char **tokens(char *str, const char* delimiter) {
             count++;
         } 
     }
+    count++;
 
-    char **tokens = malloc(count * sizeof(char*));
-    char *token = strtok(str, " ");
+    if (count == 0) {
+        printf("No tokens found. Returning NULL\n");
+        return NULL;
+    }
+
+    char **tokens = malloc((count + 1) * sizeof(char*));
+    if (!tokens) {
+        perror("malloc");
+        return NULL;
+    }
+
+    char *token = strtok(str, delimiter);
     int i = 0;
-    do {
-        int len = strlen(token);
-        if (token[len - 1] == '\n') {
-            token[len - 1] = '\0';
+    while (token != NULL) {
+        int tokLen = strlen(token);
+        if (tokLen > 0 && token[tokLen - 1] == '\n') {
+            token[tokLen - 1] = '\0';
         }
-
         tokens[i++] = token;
-        token = strtok(NULL, " ");
-    } while (token != NULL);
+        token = strtok(NULL, delimiter);
+    }
+    tokens[i] = NULL;
 
     return tokens;
 }
