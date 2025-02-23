@@ -11,6 +11,8 @@ YEAR ?=
 SRCS := $(wildcard $(DAY).c) $(wildcard $(DIR)/common.c) $(filter-out %.h, $(wildcard util/*.c))
 OBJS := $(patsubst %.c,%.o,$(SRCS))
 
+OUTPUT := aoc
+
 .PHONY: all compile link run clean run_year
 
 all: compile link run clean
@@ -20,16 +22,16 @@ compile: $(OBJS)
 $(OBJS): %.o: %.c
 	@$(CC) $(CFLAGS) -c $< -o $@
 
-link: $(PART)
+link: $(OUTPUT)
 
-$(PART): $(OBJS)
+$(OUTPUT): $(OBJS)
 	@$(CC) $(CFLAGS) $^ -o $@
 
-run: $(PART)
-	@time ./$(PART)
+run: $(OUTPUT)
+	@time ./$(OUTPUT)
 
 clean:
-	@rm -f $(PART) $(OBJS) $(wildcard $(DIR)/common.o)
+	@rm -f $(OUTPUT) $(OBJS) $(wildcard $(DIR)/common.o)
 
 run_year:
 	@if [ -z "$(YEAR)" ]; then \
