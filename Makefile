@@ -28,7 +28,7 @@ $(OUTPUT): $(OBJS)
 	@$(CC) $(CFLAGS) $^ -o $@
 
 run: $(OUTPUT)
-	@time ./$(OUTPUT)
+	@env MallocNanoZone=0 time ./$(OUTPUT)
 
 clean:
 	@rm -f $(OUTPUT) $(OBJS) $(wildcard $(DIR)/common.o)

@@ -1,5 +1,5 @@
-#include <stdbool.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -13,53 +13,69 @@ void resetGrid(char grid[GRID_SIZE][GRID_SIZE]) {
     memset(grid, -1, sizeof(char) * GRID_SIZE * GRID_SIZE);
 }
 
-bool isHorizontalMirror(char grid[GRID_SIZE][GRID_SIZE], size_t index, size_t rows) {
+unsigned int strDiff(const char *a, const char *b, size_t len) {
+    unsigned int diff = 0;
+    for (size_t i = 0; i < len; i++) {
+        if (a[i] != b[i]) diff++;
+    }
+
+    return diff;
+}
+
+bool isHorizontalMirror(char grid[GRID_SIZE][GRID_SIZE], size_t index, size_t rows, size_t columns, unsigned int acc) {
+    unsigned int diff = acc;
     int64_t back = index - 1;
     int64_t front = index + 2;
     for (; back >= 0 && front < (int64_t)rows; back--, front++) {
-        if (strncmp(grid[back], grid[front], GRID_SIZE) != 0) {
-            return false; 
+        for (size_t i = 0; i < columns; i++) {
+            if (grid[back][i] != grid[front][i]) 
+                diff++;
         }
     }
-    
-    return true;
+    return diff == 1;
 }
 
-bool isEqualColumns(char grid[GRID_SIZE][GRID_SIZE], size_t col1, size_t col2, size_t rows) {
+
+unsigned int getColumnsDiff(char grid[GRID_SIZE][GRID_SIZE], size_t col1, size_t col2, size_t rows) {
+    unsigned int diff = 0;
     for (size_t i = 0; i < rows; i++) {
         if (grid[i][col1] != grid[i][col2]) 
-            return false;
+            diff++;
     }
 
-    return true;
+    return diff;
 }
 
-bool isVerticalMirror(char grid[GRID_SIZE][GRID_SIZE], size_t index, size_t columns, size_t rows) {
+bool isVerticalMirror(char grid[GRID_SIZE][GRID_SIZE], size_t index, size_t columns, size_t rows, unsigned int acc) {
+    unsigned int diff = acc;
     int64_t back = index - 1; 
     int64_t front = index + 2; 
     for (; back >= 0 && front < (int64_t)columns; back--, front++) {
-        if (!isEqualColumns(grid, back, front, rows)) 
-            return false;
+        diff += getColumnsDiff(grid, back, front, rows);
     }
 
-    return true;
+    return diff == 1;
 }
 
 uint64_t getPoints(char grid[GRID_SIZE][GRID_SIZE], size_t rows, size_t columns) {
-    for (size_t i = 0; i < rows - 1; i++) {
-        if (memcmp(grid[i], grid[i + 1], sizeof(char) * columns) == 0 
-            && isHorizontalMirror(grid, i, rows)) {
-            return 100 * (i + 1);
-        }
-    }
-
+    uint64_t points = 0;
     for (size_t i = 0; i < columns - 1; i++) {
-        if (isEqualColumns(grid, i, i + 1, rows) && isVerticalMirror(grid, i, columns, rows)) {
-            return i + 1; 
+        unsigned int diff = getColumnsDiff(grid, i, i + 1, rows);
+        if (diff <= 1 && isVerticalMirror(grid, i, columns, rows, diff)) {
+            points = i + 1; 
         }
     }
 
-    return 0;
+    if (points > 0) 
+        return points;
+
+    for (size_t i = 0; i < rows - 1; i++) {
+        unsigned int diff = strDiff(grid[i], grid[i + 1], columns);
+        if (diff <= 1 && isHorizontalMirror(grid, i, rows, columns, diff))
+            points = 100 * (i + 1);
+    }
+
+    return points;
 }
 
 int main(void) {
@@ -97,8 +113,8 @@ int main(void) {
         for (int i = 0; i < columnCount; i++) {
             gridBuffer[rowsCount][i] = line[i];
         }
-        gridBuffer[rowsCount][columnCount + 1] = '\0';
 
+        gridBuffer[rowsCount][columnCount + 1] = '\0';
         rowsCount++;
     } while (!feof(input));
     fclose(input);
